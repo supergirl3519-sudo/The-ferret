@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Квест «Лагерь Хорьки» — Операция Усатый Шпион</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Shantell+Sans:wght@400;700;800&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --ferret-orange: #ff8c42;
+            --ferret-brown: #8b5a2b;
+            --grass-green: #7cb342;
+            --sky-blue: #4fc3f7;
+            --sun-yellow: #ffd54f;
+        }
+        
+        body {
+            font-family: 'Shantell Sans', cursive;
+            background: linear-gradient(180deg, #87CEEB 0%, #e8f5e9 40%, #a5d6a7 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .screen {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+            position: relative;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 30px;
+            padding: 40px;
+            max-width: 800px;
+            width: 100%;
+            box-shadow: 
+                0 20px 60px rgba(0,0,0,0.15),
+                0 0 0 6px var(--ferret-orange),
+                0 0 0 12px var(--sun-yellow);
+            text-align: center;
+            position: relative;
+            animation: bounceIn 0.8s ease;
+        }
+        
+        @keyframes bounceIn {
+            0% { transform: scale(0.3); opacity: 0; }
+            50% { transform: scale(1.05); }
+            70% { transform: scale(0.9); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        .ferret-emoji {
+            font-size: 5em;
+            animation: wiggle 2s infinite;
+            display: inline-block;
+        }
+        
+        @keyframes wiggle {
+            0%, 100% { transform: rotate(-10deg); }
+            50% { transform: rotate(10deg); }
+        }
+        
+        h1 {
+            font-size: 2.8em;
+            color: var(--ferret-brown);
+            margin: 20px 0;
+            text-shadow: 3px 3px 0 var(--sun-yellow);
+        }
+        
+        h2 {
+            font-size: 2em;
+            color: var(--ferret-orange);
+            margin-bottom: 20px;
+        }
+        
+        .story-text {
+            font-size: 1.3em;
+            line-height: 1.8;
+            color: #5d4037;
+            margin: 20px 0;
+            text-align: left;
+        }
+        
+        .story-text .highlight {
+            background: linear-gradient(120deg, var(--sun-yellow) 0%, var(--sun-yellow) 100%);
+            background-repeat: no-repeat;
+            background-size: 100% 40%;
+            background-position: 0 88%;
+            font-weight: 700;
+        }
+        
+        .btn {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--ferret-orange), #ff6f00);
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            font-size: 1.3em;
+            border-radius: 50px;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: 700;
+            margin: 10px;
+            transition: all 0.3s;
+            box-shadow: 0 8px 20px rgba(255, 140, 66, 0.4);
+            text-decoration: none;
+        }
+        
+        .btn:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 15px 30px rgba(255, 140, 66, 0.6);
+        }
+        
+        .btn.green {
+            background: linear-gradient(135deg, var(--grass-green), #558b2f);
+            box-shadow: 0 8px 20px rgba(124, 179, 66, 0.4);
+        }
+        
+        .btn.blue {
+            background: linear-gradient(135deg, var(--sky-blue), #0288d1);
+            box-shadow: 0 8px 20px rgba(79, 195, 247, 0.4);
+        }
+        
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .task-box {
+            background: linear-gradient(135deg, #fff8e1, #ffecb3);
+            border-radius: 20px;
+            padding: 25px;
+            margin: 20px 0;
+            border: 3px dashed var(--ferret-orange);
+            text-align: left;
+        }
+        
+        .task-number {
+            display: inline-flex;
+            width: 40px;
+            height: 40px;
+            background: var(--ferret-orange);
+            color: white;
+            border-radius: 50%;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1.2em;
+            margin-right: 10px;
+        }
+        
+        .code-input {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 30px 0;
+        }
+        
+        .code-input input {
+            width: 60px;
+            height: 70px;
+            font-size: 2em;
+            text-align: center;
+            border: 3px solid var(--ferret-orange);
+            border-radius: 15px;
+            font-family: inherit;
+            font-weight: 800;
+            color: var(--ferret-brown);
+            background: white;
+        }
+        
+        .code-input input:focus {
+            outline: none;
+            border-color: var(--grass-green);
+            transform: scale(1.1);
+        }
+        
+        .progress-track {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+        
+        .stage-dot {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            transition: all 0.5s;
+            position: relative;
+        }
+        
+        .stage-dot.completed {
+            background: var(--grass-green);
+            animation: pop 0.5s;
+        }
+        
+        .stage-dot.current {
+            background: var(--ferret-orange);
+            box-shadow: 0 0 20px var(--ferret-orange);
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pop {
+            0% { transform: scale(0); }
+            80% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+        }
+        
+        .timer {
+            font-size: 3em;
+            font-weight: 800;
+            color: var(--ferret-orange);
+            font-family: 'Courier New', monospace;
+            background: white;
+            padding: 15px 30px;
+            border-radius: 20px;
+            display: inline-block;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .clue-box {
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            border-left: 6px solid var(--sky-blue);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 15px 15px 0;
+            text-align: left;
+            font-size: 1.1em;
+        }
+        
+        .team-score {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .team-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            border: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .team-card.leading {
+            border-color: var(--sun-yellow);
+            background: #fffde7;
+            transform: scale(1.05);
+        }
+        
+        .team-name {
+            font-size: 1.2em;
+            font-weight: 700;
+            color: var(--ferret-brown);
+        }
+        
+        .team-points {
+            font-size: 2em;
+            color: var(--ferret-orange);
+            font-weight: 800;
+        }
+        
+        .riddle-options {
+            display: grid;
+            gap: 15px;
+            margin: 25px 0;
+        }
+        
+        .riddle-option {
+            background: white;
+            border: 3px solid #e0e0e0;
+            border-radius: 15px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: left;
+            font-size: 1.1em;
+        }
+        
+        .riddle-option:hover {
+            border-color: var(--ferret-orange);
+            transform: translateX(10px);
+            background: #fff3e0;
+        }
+        
+        .riddle-option.correct {
+            border-color: var(--grass-green);
+            background: #e8f5e9;
+            animation: correctPop 0.5s;
+        }
+        
+        .riddle-option.wrong {
+            border-color: #ef5350;
+            background: #ffebee;
+            animation: shake 0.5s;
+        }
+        
+        @keyframes correctPop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+        
+        .confetti {
+            position: fixed;
+            font-size: 2em;
+            animation: confettiFall 3s linear forwards;
+            z-index: 9999;
+            pointer-events: none;
+        }
+        
+        @keyframes confettiFall {
+            0% { transform: translateY(-100px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+        
+        .photo-task {
+            background: linear-gradient(135deg, #fce4ec, #f8bbd0);
+            border-radius: 20px;
+            padding: 25px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .photo-task .emoji-big {
+            font-size: 4em;
+            margin: 15px 0;
+        }
+        
+        .hidden-code {
+            font-family: 'Courier New', monospace;
+            background: #263238;
+            color: #69f0ae;
+            padding: 20px;
+            border-radius: 15px;
+            font-size: 1.5em;
+            letter-spacing: 5px;
+            margin: 20px 0;
+        }
+        
+        @media (max-width: 600px) {
+            h1 { font-size: 2em; }
+            h2 { font-size: 1.5em; }
+            .card { padding: 25px; }
+            .code-input input { width: 45px; height: 55px; font-size: 1.5em; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ЭКРАН 1: Начало -->
+    <div class="screen" id="screen-start">
+        <div class="card">
+            <div class="ferret-emoji">🦦</div>
+            <h1>Лагерь «Хорьки»</h1>
+            <h2>Операция «Усатый Шпион»</h2>
+            <div class="story-text">
+                <p>Привет, хорёк! 🌲</p>
+                <p>В лагере завелся <span class="highlight">таинственный Усатый Шпион</span>. Он спрятал вкусняшки для победителей, но оставил только загадки и шифры...</p>
+                <p>Твоя команда должна пройти <span class="highlight">5 испытаний</span>, разгадать коды и найти тайник!</p>
+                <p>У вас есть <span class="highlight">45 минут</span>. Готовы?</p>
+            </div>
+            <div class="btn-group">
+                <button class="btn" onclick="startQuest()">Вперёд! 🚀</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ЭКРАН 2: Выбор команды -->
+    <div class="screen hidden" id="screen-team">
+        <div class="card">
+            <h2>Выбери свою команду</h2>
+            <div class="story-text">
+                <p>В лагере 4 отряда хорьков. Какой ты?</p>
+            </div>
+            <div class="btn-group">
+                <button class="btn" onclick="selectTeam('Оранжевые')">🟠 Оранжевые</button>
+                <button class="btn green" onclick="selectTeam('Зелёные')">🟢 Зелёные</button>
+                <button class="btn blue" onclick="selectTeam('Синие')">🔵 Синие</button>
+                <button class="btn" style="background: linear-gradient(135deg, #ab47bc, #7b1fa2);" onclick="selectTeam('Фиолетовые')">🟣 Фиолетовые</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ЭКРАН 3: Игровое поле -->
+    <div class="screen hidden" id="screen-game">
+        <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 20px;">
+                <div>
+                    <span style="font-size: 1.2em;">Команда:</span>
+                    <span id="teamName" style="font-weight: 800; color: var(--ferret-orange); font-size: 1.3em;">—</span>
+                </div>
+                <div class="timer" id="mainTimer">45:00</div>
+            </div>
+            
+            <div class="progress-track">
+                <div class="stage-dot current" id="dot-0">🌲</div>
+                <div class="stage-dot" id="dot-1">🧩</div>
+                <div class="stage-dot" id="dot-2">🏃</div>
+                <div class="stage-dot" id="dot-3">📸</div>
+                <div class="stage-dot" id="dot-4">🔐</div>
+                <div class="stage-dot" id="dot-5">🏆</div>
+            </div>
+            
+            <div id="stage-content">
+                <!-- Сюда подгружаются задания -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ЭКРАН 4: Финал -->
+    <div class="screen hidden" id="screen-finish">
+        <div class="card">
+            <div class="ferret-emoji" style="font-size: 6em;">🎉</div>
+            <h1>Победа!</h1>
+            <div class="story-text">
+                <p>Вы разгадали все загадки Усатого Шпиона!</p>
+                <p id="finalTime">Время прохождения: —</p>
+                <p id="finalScore">Набрано очков: —</p>
+            </div>
+            <div class="hidden-code" id="secretCode">
+                КОД ТАЙНИКА: ХОРЁК2024
+            </div>
+            <div class="btn-group">
+                <button class="btn" onclick="location.reload()">Играть снова 🔄</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // === ИГРОВЫЕ ДАННЫЕ ===
+        let currentTeam = '';
+        let currentStage = 0;
+        let score = 0;
+        let timeLeft = 45 * 60; // 45 минут в секундах
+        let timerInterval;
+        let stageStartTime;
+        
+        const stages = [
+            {
+                title: "Этап 1: Лесная загадка",
+                icon: "🌲",
+                type: "riddle",
+                text: "Я расту без корней, лечу без крыльев. Падаю без травмы, а роняешь — плачешь. Что это?",
+                options: [
+                    { text: "Снег ❄️", correct: false },
+                    { text: "Слеза 💧", correct: true },
+                    { text: "Лист 🍃", correct: false },
+                    { text: "Облако ☁️", correct: false }
+                ],
+                clue: "Подсказка: Это из тебя вытекает, когда грустно...",
+                codeDigit: "7"
+            },
+            {
+                title: "Этап 2: Шифр хорька",
+                icon: "🧩",
+                type: "code",
+                text: "Расшифруй слово по картинкам: 🌙 + 🍰 = ?",
+                answer: "ПИРОГ",
+                clue: "Подсказка: Ночь + сладость = вкусняшка на праздник",
+                codeDigit: "3"
+            },
+            {
+                title: "Этап 3: Физкульт-привет!",
+                icon: "🏃",
+                type: "physical",
+                text: "Выполните в команде:",
+                tasks: [
+                    "10 прыжков на каждого",
+                    "5 отжиманий от скамейки",
+                    "Пройти 10 шагов на руках (вдвоём)",
+                    "Все вместе: 15 приседаний"
+                ],
+                clue: "Подсказка: Последняя буква названия упражнения — 'Ы'",
+                codeDigit: "9"
+            },
+            {
+                title: "Этап 4: Фотоохота",
+                icon: "📸",
+                type: "photo",
+                text: "Сделайте фото, где:",
+                tasks: [
+                    "Все члены команды висят на одной руке",
+                    "Один хорёк сидит на плечах у другого",
+                    "Вся команда в форме буквы 'Х'",
+                    "Все прячутся за одним деревом (но видны ноги)"
+                ],
+                clue: "Подсказка: Посчитайте ноги на последнем фото",
+                codeDigit: "8"
+            },
+            {
+                title: "Этап 5: Последний код",
+                icon: "🔐",
+                type: "final",
+                text: "Введите цифры, полученные на каждом этапе:",
+                clue: "Если забыли — спросите у вожатого подсказку",
+                correctCode: "7398"
+            }
+        ];
+        
+        // === ФУНКЦИИ ===
+        
+        function startQuest() {
+            document.getElementById('screen-start').classList.add('hidden');
+            document.getElementById('screen-team').classList.remove('hidden');
+        }
+        
+        function selectTeam(name) {
+            currentTeam = name;
+            document.getElementById('teamName').textContent = name;
+            document.getElementById('screen-team').classList.add('hidden');
+            document.getElementById('screen-game').classList.remove('hidden');
+            startTimer();
+            loadStage(0);
+        }
+        
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                const mins = Math.floor(timeLeft / 60);
+                const secs = timeLeft % 60;
+                document.getElementById('mainTimer').textContent = 
+                    `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+                
+                if (timeLeft <= 300) { // 5 минут
+                    document.getElementById('mainTimer').style.color = '#ef5350';
+                }
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    alert('Время вышло! Но вы молодцы, что попытались! 🦦');
+                }
+            }, 1000);
+        }
+        
+        function loadStage(index) {
+            currentStage = index;
+            stageStartTime = Date.now();
+            const stage = stages[index];
+            const container = document.getElementById('stage-content');
+            
+            // Обновляем прогресс
+            document.querySelectorAll('.stage-dot').forEach((dot, i) => {
+                dot.classList.remove('current', 'completed');
+                if (i < index) dot.classList.add('completed');
+                if (i === index) dot.classList.add('current');
+            });
+            
+            let html = `
+                <h2>${stage.title} ${stage.icon}</h2>
+                <div class="story-text">${stage.text}</div>
+            `;
+            
+            if (stage.type === 'riddle') {
+                html += `<div class="riddle-options">`;
+                stage.options.forEach((opt, i) => {
+                    html += `<div class="riddle-option" onclick="checkRiddle(this, ${opt.correct})">${opt.text}</div>`;
+                });
+                html += `</div>`;
+            }
+            
+            if (stage.type === 'code') {
+                html += `
+                    <div class="code-input">
+                        <input type="text" maxlength="1" id="c1" onkeyup="moveNext(this, 'c2')">
+                        <input type="text" maxlength="1" id="c2" onkeyup="moveNext(this, 'c3')">
+                        <input type="text" maxlength="1" id="c3" onkeyup="moveNext(this, 'c4')">
+                        <input type="text" maxlength="1" id="c4" onkeyup="moveNext(this, 'c5')">
+                        <input type="text" maxlength="1" id="c5" onkeyup="checkWord()">
+                    </div>
+                    <button class="btn" onclick="checkWord()">Проверить ✓</button>
+                `;
+            }
+            
+            if (stage.type === 'physical') {
+                html += `<div class="task-box">`;
+                stage.tasks.forEach((task, i) => {
+                    html += `<p style="margin: 10px 0;"><span class="task-number">${i+1}</span>${task}</p>`;
+                });
+                html += `</div>
+                    <button class="btn green" onclick="completePhysical()">Мы справились! 💪</button>
+                `;
+            }
+            
+            if (stage.type === 'photo') {
+                html += `<div class="photo-task">`;
+                stage.tasks.forEach((task, i) => {
+                    html += `<p style="margin: 15px 0; font-size: 1.2em;">📷 ${task}</p>`;
+                });
+                html += `</div>
+                    <button class="btn blue" onclick="completePhoto()">Фото готовы! 📸</button>
+                `;
+            }
+            
+            if (stage.type === 'final') {
+                html += `
+                    <div class="code-input">
+                        <input type="text" maxlength="1" id="f1">
+                        <input type="text" maxlength="1" id="f2">
+                        <input type="text" maxlength="1" id="f3">
+                        <input type="text" maxlength="1" id="f4">
+                    </div>
+                    <button class="btn" onclick="checkFinalCode()">Открыть тайник 🔓</button>
+                `;
+            }
+            
+            html += `
+                <div class="clue-box" style="margin-top: 20px; cursor: pointer;" onclick="this.style.opacity='1'">
+                    <strong>💡 Нужна подсказка?</strong> (нажми)<br>
+                    <span style="opacity: 0.7;">${stage.clue}</span>
+                </div>
+            `;
+            
+            container.innerHTML = html;
+        }
+        
+        function checkRiddle(element, isCorrect) {
+            const options = document.querySelectorAll('.riddle-option');
+            options.forEach(opt => opt.style.pointerEvents = 'none');
+            
+            if (isCorrect) {
+                element.classList.add('correct');
+                score += 100;
+                setTimeout(() => nextStage(), 1500);
+            } else {
+                element.classList.add('wrong');
+                score = Math.max(0, score - 20);
+                setTimeout(() => {
+                    options.forEach(opt => {
+                        opt.style.pointerEvents = 'auto';
+                        opt.classList.remove('wrong');
+                    });
+                }, 1000);
+            }
+        }
+        
+        function moveNext(current, nextId) {
+            if (current.value.length === 1) {
+                document.getElementById(nextId)?.focus();
+            }
+        }
+        
+        function checkWord() {
+            const word = ['c1','c2','c3','c4','c5'].map(id => document.getElementById(id)?.value).join('').toUpperCase();
+            if (word === 'ПИРОГ' || word === 'PIROG') {
+                score += 100;
+                nextStage();
+            } else {
+                alert('Не-а! Подумай ещё... 🧐');
+            }
+        }
+        
+        function completePhysical() {
+            score += 100;
+            nextStage();
+        }
+        
+        function completePhoto() {
+            score += 100;
+            nextStage();
+        }
+        
+        function checkFinalCode() {
+            const code = ['f1','f2','f3','f4'].map(id => document.getElementById(id)?.value).join('');
+            if (code === stages[4].correctCode) {
+                score += 200;
+                finishGame();
+            } else {
+                alert('Код неверный! Проверь цифры с каждого этапа...');
+            }
+        }
+        
+        function nextStage() {
+            confetti();
+            if (currentStage < stages.length - 1) {
+                setTimeout(() => loadStage(currentStage + 1), 1000);
+            } else {
+                finishGame();
+            }
+        }
+        
+        function finishGame() {
+            clearInterval(timerInterval);
+            const timeSpent = 45 * 60 - timeLeft;
+            const mins = Math.floor(timeSpent / 60);
+            const secs = timeSpent % 60;
+            
+            document.getElementById('screen-game').classList.add('hidden');
+            document.getElementById('screen-finish').classList.remove('hidden');
+            
+            document.getElementById('finalTime').textContent = 
+                `Время прохождения: ${mins} мин ${secs} сек`;
+            document.getElementById('finalScore').textContent = 
+                `Набрано очков: ${score}`;
+            
+            // Бонус за скорость
+            if (timeSpent < 20 * 60) score += 100;
+            
+            confetti();
+            setTimeout(confetti, 500);
+            setTimeout(confetti, 1000);
+        }
+        
+        function confetti() {
+            const emojis = ['🎉', '🎊', '⭐', '🦦', '🌲', '🏆', '🍰', '🎈'];
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    const el = document.createElement('div');
+                    el.className = 'confetti';
+                    el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                    el.style.left = Math.random() * 100 + '%';
+                    el.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                    el.style.fontSize = (Math.random() * 20 + 20) + 'px';
+                    document.body.appendChild(el);
+                    setTimeout(() => el.remove(), 3000);
+                }, i * 100);
+            }
+        }
+    </script>
+</body>
+</html>
